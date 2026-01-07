@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harbor Editorial Freelancers 2026</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div>
+                    <h1>Harbor Editorial<br>Freelancers 2026</h1>
+                    <p class="subtitle">Track freelance editors and their commercial work</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-primary" id="addEditorBtn">Add Editor</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="toolbar">
+            <div class="search-container">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Search editors, skills, projects...">
+            </div>
+            <div class="filters">
+                <select id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="available">Available</option>
+                    <option value="busy">Busy</option>
+                    <option value="unavailable">Unavailable</option>
+                </select>
+                <select id="skillFilter">
+                    <option value="">All Skills</option>
+                    <option value="commercial">Commercial</option>
+                    <option value="narrative">Narrative</option>
+                    <option value="documentary">Documentary</option>
+                    <option value="music-video">Music Video</option>
+                    <option value="case-studies">Case Studies</option>
+                    <option value="pitch-videos">Pitch Videos</option>
+                </select>
+                <button class="btn-secondary btn-small" id="clearFiltersBtn">Clear Filters</button>
+            </div>
+        </div>
+
+        <div id="statsBar" class="stats-bar">
+            <div class="stat">
+                <span class="stat-label">Total Editors</span>
+                <span class="stat-value" id="totalEditors">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Active Projects</span>
+                <span class="stat-value" id="activeProjects">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Available Now</span>
+                <span class="stat-value" id="availableEditors">0</span>
+            </div>
+        </div>
+
+        <div id="editorsGrid" class="editors-grid">
+            <!-- Editor cards will be dynamically inserted here -->
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <h2>No editors found</h2>
+            <p>Add your first freelance editor to get started</p>
+            <button class="btn-primary" onclick="editorManager.openAddModal()">+ Add Editor</button>
+        </div>
+    </div>
+
+    <!-- Add/Edit Editor Modal -->
+    <div id="editorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Editor</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="editorForm">
+                <input type="hidden" id="editorId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editorName">Name *</label>
+                        <input type="text" id="editorName" required placeholder="Full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="editorStatus">Status</label>
+                        <select id="editorStatus">
+                            <option value="available">Available</option>
+                            <option value="busy">Busy</option>
+                            <option value="unavailable">Unavailable</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editorEmail">Email</label>
+                        <input type="email" id="editorEmail" placeholder="email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="editorPhone">Phone</label>
+                        <input type="tel" id="editorPhone" placeholder="+1 (555) 123-4567">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editorPhoto">Profile Photo</label>
+                    <input type="url" id="editorPhoto" placeholder="https://example.com/photo.jpg">
+                    <small style="display: block; margin-top: 8px; color: #999999; font-size: 12px;">Or upload an image file</small>
+                    <input type="file" id="photoUpload" accept="image/*" style="margin-top: 8px; width: 100%; padding: 8px; border: 1px solid #e5e5e5; background: #ffffff;">
+                    <div id="photoPreview" style="margin-top: 12px; display: none;">
+                        <img id="photoPreviewImg" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border: 1px solid #e5e5e5;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editorLocation">Location</label>
+                    <input type="text" id="editorLocation" placeholder="City, State/Country">
+                </div>
+
+                <div class="form-group">
+                    <label for="editorRate">Day Rate</label>
+                    <input type="text" id="editorRate" placeholder="e.g., $1,500">
+                </div>
+
+                <div class="form-group">
+                    <label for="editorSkills">Skills</label>
+                    <div id="skillsContainer" class="tags-container">
+                        <!-- Skills will be dynamically added here -->
+                    </div>
+                    <div class="skill-input-group">
+                        <input type="text" id="skillInput" placeholder="Add skill (e.g., Commercial, Narrative, Documentary)">
+                        <button type="button" class="btn-secondary btn-small" id="addSkillBtn">Add</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editorSoftware">Software</label>
+                    <div id="softwareContainer" class="tags-container">
+                        <!-- Software will be dynamically added here -->
+                    </div>
+                    <div class="skill-input-group">
+                        <input type="text" id="softwareInput" placeholder="Add software (e.g., Premiere Pro, Avid, DaVinci)">
+                        <button type="button" class="btn-secondary btn-small" id="addSoftwareBtn">Add</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editorNotes">Notes</label>
+                    <textarea id="editorNotes" rows="4" placeholder="Additional notes about this editor..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="editorReel">Reel/Portfolio URL</label>
+                    <input type="url" id="editorReel" placeholder="https://example.com/reel">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Editor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Editor Detail Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="detailName"></h2>
+                <div class="header-actions-small">
+                    <button class="btn-secondary btn-small" id="editFromDetailBtn">Edit</button>
+                    <span class="close-detail">&times;</span>
+                </div>
+            </div>
+            <div id="detailContent">
+                <!-- Detail content will be dynamically inserted -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Project Modal -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="projectModalTitle">Add Project</h2>
+                <span class="close-project">&times;</span>
+            </div>
+            <form id="projectForm">
+                <input type="hidden" id="projectEditorId">
+                <input type="hidden" id="projectId">
+                
+                <div class="form-group">
+                    <label for="projectName">Project Name *</label>
+                    <input type="text" id="projectName" required placeholder="e.g., Nike Commercial - Summer 2024">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="projectClient">Client/Brand</label>
+                        <input type="text" id="projectClient" placeholder="Client name">
+                    </div>
+                    <div class="form-group">
+                        <label for="projectStatus">Status</label>
+                        <select id="projectStatus">
+                            <option value="upcoming">Upcoming</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="projectStartDate">Start Date</label>
+                        <input type="date" id="projectStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="projectEndDate">End Date</label>
+                        <input type="date" id="projectEndDate">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="projectNotes">Notes</label>
+                    <textarea id="projectNotes" rows="3" placeholder="Project details, deliverables, etc."></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelProjectBtn">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
