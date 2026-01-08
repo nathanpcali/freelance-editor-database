@@ -18,7 +18,7 @@ class EditorManager {
             status: '',
             skill: ''
         };
-        this.password = 'Harbor';
+        this.password = 'Jesse';
         this.loginPassword = 'Harbor';
         this.rateUnlocked = sessionStorage.getItem('rateUnlocked') === 'true';
         this.init();
