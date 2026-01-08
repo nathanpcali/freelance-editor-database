@@ -10,7 +10,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal login-modal show">
+        <div class="login-content">
+            <div class="login-header">
+                <h2>Harbor Editorial<br>Freelancers 2026</h2>
+                <p class="login-subtitle">Enter password to access</p>
+            </div>
+            <form id="loginForm">
+                <div class="login-input-group">
+                    <input type="password" id="loginPassword" placeholder="Password" required autofocus>
+                    <button type="submit" class="btn-primary">Access</button>
+                </div>
+                <p id="loginError" class="login-error" style="display: none;">Incorrect password. Please try again.</p>
+            </form>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer" style="display: none;">
         <header class="header">
             <div class="header-content">
                 <div>

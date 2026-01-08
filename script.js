@@ -1,6 +1,14 @@
 // Freelance Editor Database Manager
 class EditorManager {
     constructor() {
+        // Check if user is authenticated
+        const isAuthenticated = sessionStorage.getItem('authenticated') === 'true';
+        
+        if (!isAuthenticated) {
+            this.showLogin();
+            return;
+        }
+
         this.editors = this.loadFromStorage();
         this.currentEditingId = null;
         this.currentProjectEditorId = null;
@@ -11,14 +19,33 @@ class EditorManager {
             skill: ''
         };
         this.password = 'Harbor';
+        this.loginPassword = 'Harbor';
         this.rateUnlocked = sessionStorage.getItem('rateUnlocked') === 'true';
         this.init();
     }
 
     init() {
+        // Hide login and show main content
+        const loginModal = document.getElementById('loginModal');
+        const mainContainer = document.getElementById('mainContainer');
+        if (loginModal) loginModal.classList.remove('show');
+        if (mainContainer) mainContainer.style.display = 'block';
+
         this.renderEditors();
         this.updateStats();
         this.setupEventListeners();
+        this.setupLoginListeners();
+    }
+
+    showLogin() {
+        const loginModal = document.getElementById('loginModal');
+        const mainContainer = document.getElementById('mainContainer');
+        if (loginModal) loginModal.classList.add('show');
+        if (mainContainer) mainContainer.style.display = 'none';
+    }
+
+    setupLoginListeners() {
+        // Login listeners are handled in DOMContentLoaded
     }
 
     // Load editors from localStorage
@@ -1346,6 +1373,36 @@ class EditorManager {
 // Initialize the application
 let editorManager;
 document.addEventListener('DOMContentLoaded', () => {
-    editorManager = new EditorManager();
+    // Initialize login form if not authenticated
+    const isAuthenticated = sessionStorage.getItem('authenticated') === 'true';
+    
+    if (!isAuthenticated) {
+        const loginForm = document.getElementById('loginForm');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginError = document.getElementById('loginError');
+        
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const password = loginPassword.value.trim();
+                
+                if (password === 'Harbor') {
+                    sessionStorage.setItem('authenticated', 'true');
+                    if (loginError) loginError.style.display = 'none';
+                    // Initialize the main app
+                    editorManager = new EditorManager();
+                } else {
+                    if (loginError) loginError.style.display = 'block';
+                    if (loginPassword) {
+                        loginPassword.value = '';
+                        loginPassword.focus();
+                    }
+                }
+            });
+        }
+    } else {
+        // Already authenticated, initialize normally
+        editorManager = new EditorManager();
+    }
 });
 
