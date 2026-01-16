@@ -9,7 +9,7 @@ class EditorManager {
             return;
         }
 
-        this.editors = this.loadFromStorage();
+        this.editors = [];
         this.currentEditingId = null;
         this.currentProjectEditorId = null;
         this.currentProjectId = null;
@@ -24,13 +24,16 @@ class EditorManager {
         this.init();
     }
 
-    init() {
+    async init() {
         // Hide login and show main content
         const loginModal = document.getElementById('loginModal');
         const mainContainer = document.getElementById('mainContainer');
         if (loginModal) loginModal.classList.remove('show');
         if (mainContainer) mainContainer.style.display = 'block';
 
+        // Load editors (will try data.json first, then localStorage)
+        this.editors = await this.loadFromStorage();
+        
         this.renderEditors();
         this.updateStats();
         this.setupEventListeners();
@@ -48,12 +51,33 @@ class EditorManager {
         // Login listeners are handled in DOMContentLoaded
     }
 
-    // Load editors from localStorage
-    loadFromStorage() {
+    // Load editors from localStorage or shared data file
+    async loadFromStorage() {
+        // First, try to load from shared data.json file (for syncing across devices)
+        try {
+            const response = await fetch('data.json');
+            if (response.ok) {
+                const sharedData = await response.json();
+                if (Array.isArray(sharedData) && sharedData.length > 0) {
+                    // Save to localStorage for offline access
+                    localStorage.setItem('freelanceEditors', JSON.stringify(sharedData));
+                    return sharedData;
+                }
+            }
+        } catch (error) {
+            // data.json doesn't exist or can't be loaded, continue to localStorage
+            console.log('No shared data file found, using localStorage');
+        }
+
+        // Try localStorage
         const stored = localStorage.getItem('freelanceEditors');
         if (stored) {
-            return JSON.parse(stored);
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                return parsed;
+            }
         }
+        
         // Return sample data if no stored data exists
         return this.getSampleEditors();
     }
@@ -557,6 +581,8 @@ class EditorManager {
     // Save editors to localStorage
     saveToStorage() {
         localStorage.setItem('freelanceEditors', JSON.stringify(this.editors));
+        // Also try to update data.json if we're on the same origin (for GitHub Pages)
+        // Note: This won't work for static sites, but we'll keep localStorage as primary
     }
 
     // Setup event listeners
@@ -665,6 +691,19 @@ class EditorManager {
                 e.preventDefault();
                 this.addSoftware();
             }
+        });
+
+        // Export/Import
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            this.exportData();
+        });
+
+        document.getElementById('importBtn').addEventListener('click', () => {
+            document.getElementById('importFile').click();
+        });
+
+        document.getElementById('importFile').addEventListener('change', (e) => {
+            this.importData(e);
         });
 
         // Photo upload

@@ -125,14 +125,27 @@ freelance-editor-database/
 └── README.md       # This file
 ```
 
-## Data Storage
+## Data Storage & Syncing
 
-All data is stored locally in your browser's localStorage. This means:
+### Automatic Sync (Recommended)
+The application automatically tries to load data from a `data.json` file if it exists in the same directory. This allows you to:
+1. Export your data using the "Export" button
+2. Rename the exported file to `data.json`
+3. Upload it to your GitHub repository
+4. All users will automatically see the same data when they visit the site
+
+### Local Storage
+Data is also stored locally in your browser's localStorage as a backup:
 - ✅ No server required
 - ✅ Works offline
 - ✅ Fast and private
 - ⚠️ Data is specific to each browser/device
-- ⚠️ Clearing browser data will delete your information (use Export to backup!)
+- ⚠️ Clearing browser data will delete your information
+
+### Manual Sync
+Use the Export/Import buttons to manually sync data between devices:
+- **Export**: Download your current data as JSON
+- **Import**: Upload a JSON file to replace current data
 
 ## Browser Support
 
